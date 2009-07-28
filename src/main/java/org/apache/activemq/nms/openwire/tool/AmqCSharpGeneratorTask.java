@@ -76,7 +76,7 @@ public class AmqCSharpGeneratorTask extends Task {
             {
                 CommandGenerator script = new CommandGenerator();
                 script.setJam(jam);
-                script.setTargetDir(target + "/src/main");
+                script.setTargetDir(target + "/src/main/csharp");
                 script.setOpenwireVersion(maxVersion);
                 script.run();
             }

@@ -83,11 +83,6 @@ public class CommandCodeGeneratorsFactory {
             generator = new CommandClassGenerator();
 //        }
 
-        if( className.endsWith("Id") ) {
-            generator.setComparable( true );
-            generator.setAssignable( true );
-        }
-
         if( this.commandsWithShortcuts.contains( className ) ) {
             generator.setGenIsClass( true );
         }

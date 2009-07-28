@@ -18,8 +18,6 @@ package org.apache.activemq.nms.openwire.tool.commands;
 
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.codehaus.jam.JClass;
 import org.codehaus.jam.JProperty;
@@ -31,10 +29,7 @@ public abstract class CommandCodeGenerator {
     private boolean marshalAware = false;
     private String className;
     private String baseClassName;
-    private Set<String> includeFiles = new TreeSet<String>();
     private String openWireOpCode;
-    private boolean comparable = false;
-    private boolean assignable = false;
     private boolean genIsClass = false;
 
     public abstract void generate( PrintWriter out );
@@ -65,22 +60,6 @@ public abstract class CommandCodeGenerator {
 
     public void setGenIsClass(boolean genIsClass) {
         this.genIsClass = genIsClass;
-    }
-
-    public boolean isComparable() {
-        return comparable;
-    }
-
-    public void setComparable(boolean comparable) {
-        this.comparable = comparable;
-    }
-
-    public boolean isAssignable() {
-        return assignable;
-    }
-
-    public void setAssignable(boolean assignable) {
-        this.assignable = assignable;
     }
 
     public JClass getJClass() {
@@ -123,14 +102,6 @@ public abstract class CommandCodeGenerator {
         this.baseClassName = baseClassName;
     }
 
-    public Set<String> getIncludeFiles() {
-        return includeFiles;
-    }
-
-    public void setIncludeFiles(Set<String> includeFiles) {
-        this.includeFiles = includeFiles;
-    }
-
     public String getOpenWireOpCode() {
         return openWireOpCode;
     }
@@ -139,62 +110,40 @@ public abstract class CommandCodeGenerator {
         this.openWireOpCode = openWireOpCode;
     }
 
-    protected String toHeaderFileName( JClass type ) {
-        String name = type.getSimpleName();
+//    protected String toFileName( JClass type ) {
+//        String name = type.getSimpleName();
+//
+//        if( name.equals( "String" ) ) {
+//            return null;
+//        } else if( type.isArrayType() ) {
+//            JClass arrayClass = type.getArrayComponentType();
+//            return toHeaderFileName( arrayClass );
+//        } else if( name.equals( "Throwable" ) || name.equals( "Exception" ) ) {
+//            return "BrokerError";
+//        } else if( name.equals("BaseDataStructure" ) ){
+//            return "DataStructure";
+//        } else if( name.equals("ByteSequence") ) {
+//            return "std::vector<unsigned char>";
+//        } else if( !type.isPrimitiveType() ) {
+//            return name;
+//        } else {
+//            return null;
+//        }
+//    }
 
-        if( name.equals( "String" ) ) {
-            return null;
-        } else if( type.isArrayType() ) {
-            JClass arrayClass = type.getArrayComponentType();
-            return toHeaderFileName( arrayClass );
-        } else if( name.equals( "Throwable" ) || name.equals( "Exception" ) ) {
-            return "BrokerError";
-        } else if( name.equals("BaseDataStructure" ) ){
-            return "DataStructure";
-        } else if( name.equals("ByteSequence") ) {
-            return "std::vector<unsigned char>";
-        } else if( !type.isPrimitiveType() ) {
-            return name;
-        } else {
-            return null;
-        }
-    }
-
-    protected String toCppType(JClass type) {
+    protected String toCSharpType(JClass type) {
         String name = type.getSimpleName();
         if (name.equals("String")) {
-            return "std::string";
-        }
-        else if( type.isArrayType() ) {
-            if( name.equals( "byte[]" ) )
-                name = "unsigned char[]";
-
-            JClass arrayClass = type.getArrayComponentType();
-
-            if( arrayClass.isPrimitiveType() ) {
-                return "std::vector<" + name.substring( 0, name.length()-2 ) + ">";
-            } else {
-                return "std::vector< decaf::lang::Pointer<" +
-                       name.substring( 0, name.length()-2 ) + "> >";
-            }
+            return "string";
         }
         else if( name.equals( "Throwable" ) || name.equals( "Exception" ) ) {
             return "BrokerError";
         }
-        else if( name.equals("BaseDataStructure" ) ){
-            return "DataStructure";
-        }
         else if( name.equals("ByteSequence") ) {
-            return "std::vector<unsigned char>";
+            return "byte[]";
         }
         else if( name.equals("boolean") ) {
             return "bool";
-        }
-        else if( name.equals("long") ) {
-            return "long long";
-        }
-        else if( name.equals("byte") ) {
-            return "unsigned char";
         }
         else if( !type.isPrimitiveType() ) {
             return name;
@@ -205,9 +154,9 @@ public abstract class CommandCodeGenerator {
     }
 
     /**
-     * Converts the Java type to a C++ default value
+     * Converts the Java type to a CSharp default value
      */
-    protected String toCppDefaultValue(JClass type) {
+    protected String toCSharpDefaultValue(JClass type) {
         String name = type.getSimpleName();
 
         if (name.equals("boolean")) {
@@ -215,7 +164,7 @@ public abstract class CommandCodeGenerator {
         } else if( name.equals("String") ) {
             return "\"\"";
         } else if( !type.isPrimitiveType() ) {
-            return "NULL";
+            return "null";
         } else {
             return "0";
         }

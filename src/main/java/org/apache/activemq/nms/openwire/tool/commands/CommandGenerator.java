@@ -34,7 +34,7 @@ public class CommandGenerator extends MultiSourceGenerator {
     private CommandCodeGeneratorsFactory generatorsFactory =
         new CommandCodeGeneratorsFactory();
 
-    protected String targetDir="./src/main";
+    protected String targetDir="./src/main/csharp";
 
     public String getTargetDir() {
         return targetDir;
@@ -64,10 +64,10 @@ public class CommandGenerator extends MultiSourceGenerator {
     }
 
     public Object run() {
-        filePostFix = ".cpp";
+        filePostFix = ".cs";
         if (destDir == null) {
             destDir = new File(
-                targetDir+"/activemq/commands");
+                targetDir+"/Commands");
         }
 
         return super.run();
@@ -75,7 +75,7 @@ public class CommandGenerator extends MultiSourceGenerator {
 
     protected void generateClassFile() throws Exception {
 
-        File headerFile = new File(destDir, className + ".cs");
+        File headerFile = new File(destDir, className + filePostFix);
 
         CommandCodeGenerator generator = generatorsFactory.getCodeGenerator( className );
 
