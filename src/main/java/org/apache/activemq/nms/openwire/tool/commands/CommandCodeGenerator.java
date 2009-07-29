@@ -18,6 +18,8 @@ package org.apache.activemq.nms.openwire.tool.commands;
 
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.codehaus.jam.JClass;
 import org.codehaus.jam.JProperty;
@@ -26,11 +28,13 @@ public abstract class CommandCodeGenerator {
 
     private JClass jClass;
     private List<JProperty> properties;
+    private Set<String> additionalBases = new TreeSet<String>();
     private boolean marshalAware = false;
     private String className;
     private String baseClassName;
     private String openWireOpCode;
-    private boolean genIsClass = false;
+    private boolean cloneable;
+    private boolean comparable;
 
     public abstract void generate( PrintWriter out );
 
@@ -54,14 +58,6 @@ public abstract class CommandCodeGenerator {
         out.println("");
     }
 
-    public boolean isGenIsClass() {
-        return genIsClass;
-    }
-
-    public void setGenIsClass(boolean genIsClass) {
-        this.genIsClass = genIsClass;
-    }
-
     public JClass getJClass() {
         return jClass;
     }
@@ -78,12 +74,28 @@ public abstract class CommandCodeGenerator {
         this.properties = properties;
     }
 
+    public boolean isComparable() {
+        return comparable;
+    }
+
+    public void setComparable(boolean comparable) {
+        this.comparable = comparable;
+    }
+
     public boolean isMarshalAware() {
         return marshalAware;
     }
 
     public void setMarshalAware(boolean marshalAware) {
         this.marshalAware = marshalAware;
+    }
+
+    public boolean isCloneable() {
+        return cloneable;
+    }
+
+    public void setCloneable(boolean cloneable) {
+        this.cloneable = cloneable;
     }
 
     public String getClassName() {
@@ -110,26 +122,17 @@ public abstract class CommandCodeGenerator {
         this.openWireOpCode = openWireOpCode;
     }
 
-//    protected String toFileName( JClass type ) {
-//        String name = type.getSimpleName();
-//
-//        if( name.equals( "String" ) ) {
-//            return null;
-//        } else if( type.isArrayType() ) {
-//            JClass arrayClass = type.getArrayComponentType();
-//            return toHeaderFileName( arrayClass );
-//        } else if( name.equals( "Throwable" ) || name.equals( "Exception" ) ) {
-//            return "BrokerError";
-//        } else if( name.equals("BaseDataStructure" ) ){
-//            return "DataStructure";
-//        } else if( name.equals("ByteSequence") ) {
-//            return "std::vector<unsigned char>";
-//        } else if( !type.isPrimitiveType() ) {
-//            return name;
-//        } else {
-//            return null;
-//        }
-//    }
+    public void addAdditionalBase( String name ) {
+        this.additionalBases.add(name);
+    }
+
+    public Set<String> getAdditionalBases() {
+        return additionalBases;
+    }
+
+    public void setAdditionalBases(Set<String> additionalBases) {
+        this.additionalBases = additionalBases;
+    }
 
     protected String toCSharpType(JClass type) {
         String name = type.getSimpleName();

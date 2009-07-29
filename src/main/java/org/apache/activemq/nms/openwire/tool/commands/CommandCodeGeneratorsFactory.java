@@ -16,9 +16,6 @@
  */
 package org.apache.activemq.nms.openwire.tool.commands;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Provides methods to get a Source file and Header file Code generator given a Class
  * name.
@@ -26,35 +23,6 @@ import java.util.Set;
  * @since 2.0
  */
 public class CommandCodeGeneratorsFactory {
-
-    private Set<String> commandsWithShortcuts;
-
-    /*
-     * Here we store all Commands that need to have a isXXX method generated
-     * such as isMessage.  We then check in the <code>checkNeedsShortcut</code>
-     * method and if the Command being generated is in this list we create a
-     * method call to override the virtual method in the base Command interface.
-     */
-    {
-        commandsWithShortcuts = new HashSet<String>();
-        commandsWithShortcuts.add( "Response" );
-        commandsWithShortcuts.add( "RemoveInfo" );
-        commandsWithShortcuts.add( "MessageDispatch" );
-        commandsWithShortcuts.add( "BrokerInfo" );
-        commandsWithShortcuts.add( "KeepAliveInfo" );
-        commandsWithShortcuts.add( "WireFormatInfo" );
-        commandsWithShortcuts.add( "Message" );
-        commandsWithShortcuts.add( "MessageAck" );
-        commandsWithShortcuts.add( "ProducerAck" );
-        commandsWithShortcuts.add( "ProducerInfo" );
-        commandsWithShortcuts.add( "MessageDispatchNotification" );
-        commandsWithShortcuts.add( "ShutdownInfo" );
-        commandsWithShortcuts.add( "TransactionInfo" );
-        commandsWithShortcuts.add( "ConnectionInfo" );
-        commandsWithShortcuts.add( "ConsumerInfo" );
-        commandsWithShortcuts.add( "RemoveSubscriptionInfo" );
-
-    }
 
     /**
      * Given a class name return an instance of a CSharp Class File Generator
@@ -66,25 +34,23 @@ public class CommandCodeGeneratorsFactory {
      */
     public CommandCodeGenerator getCodeGenerator( String className ) {
 
-        CommandCodeGenerator generator = null;
-//        if( className.equals("Message") ) {
-//            generator = new MessageHeaderGenerator();
-//        } else if( className.equals("ConnectionId") ) {
-//            generator = new ConnectionIdHeaderGenerator();
-//        } else if( className.equals("ConsumerId") ) {
-//            generator = new ConsumerIdHeaderGenerator();
-//        } else if( className.equals("ProducerId") ) {
-//            generator = new ProducerIdHeaderGenerator();
-//        } else if( className.equals("SessionId") ) {
-//            generator = new SessionIdHeaderGenerator();
-//        } else if( className.equals("SessionInfo") ) {
-//            generator = new SessionInfoHeaderGenerator();
-//        } else {
-            generator = new CommandClassGenerator();
-//        }
+        Class<?> generatorClass = null;
 
-        if( this.commandsWithShortcuts.contains( className ) ) {
-            generator.setGenIsClass( true );
+        try {
+            generatorClass = Class.forName( "org.apache.activemq.nms.openwire.tool.commands." + className + "Generator" );
+        } catch (ClassNotFoundException e) {
+            return new CommandClassGenerator();
+        }
+
+        CommandCodeGenerator generator;
+        try {
+            generator = (CommandCodeGenerator) generatorClass.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
         }
 
         return generator;

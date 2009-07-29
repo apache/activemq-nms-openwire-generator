@@ -56,7 +56,7 @@ public class CommandGenerator extends MultiSourceGenerator {
 
         try {
             // Using the current JClass state in the MultiSourceGenerator we can
-            // now generate the Header and Source for the CSharp commands.
+            // now generate the Source for the CSharp commands.
             generateClassFile();
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +64,6 @@ public class CommandGenerator extends MultiSourceGenerator {
     }
 
     public Object run() {
-        filePostFix = ".cs";
         if (destDir == null) {
             destDir = new File(
                 targetDir+"/Commands");
@@ -75,7 +74,7 @@ public class CommandGenerator extends MultiSourceGenerator {
 
     protected void generateClassFile() throws Exception {
 
-        File headerFile = new File(destDir, className + filePostFix);
+        File headerFile = new File(destDir, className + ".cs");
 
         CommandCodeGenerator generator = generatorsFactory.getCodeGenerator( className );
 
@@ -85,6 +84,7 @@ public class CommandGenerator extends MultiSourceGenerator {
         generator.setClassName( getClassName() );
         generator.setBaseClassName( getBaseClass() );
         generator.setOpenWireOpCode( getOpenWireOpCode(getJclass()) );
+        generator.setComparable( className.endsWith("Id") );
 
         PrintWriter out = null;
         try {
@@ -99,8 +99,7 @@ public class CommandGenerator extends MultiSourceGenerator {
         }
 
         // Use the FixCRLF Ant Task to make sure the file has consistent
-        // newlines
-        // so that SVN does not complain on checkin.
+        // newlines so that SVN does not complain on checkin.
         Project project = new Project();
         project.init();
         FixCRLF fixCRLF = new FixCRLF();

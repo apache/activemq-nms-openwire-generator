@@ -29,7 +29,7 @@ import org.codehaus.jam.JamServiceParams;
 
 public class AmqCSharpGeneratorTask extends Task {
 
-    int maxVersion = 3;
+    int maxVersion = 5;
     File source = new File(".");
     File target = new File(".");
 

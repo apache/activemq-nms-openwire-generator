@@ -38,7 +38,6 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         out.println("");
         out.println("namespace Apache.NMS.ActiveMQ.Commands");
         out.println("{");
-        out.println("");
         out.println("    /*");
         out.println("     *");
         out.println("     *  Command code for OpenWire format for "+getClassName() );
@@ -57,6 +56,10 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         generateProperties( out );
 
         out.println("");
+
+        generateConstructors(out);
+
+        out.println("");
         out.println("        ///");
         out.println("        /// <summery>");
         out.println("        ///  Get the unique identifier that this object and its own");
@@ -68,16 +71,20 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         out.println("            return ID_" + getClassName().toUpperCase() + ";");
         out.println("        }");
         out.println("");
-//        out.println("        ///");
-//        out.println("        /// <summery>");
-//        out.println("        ///  Clone this object and return a new instance that the caller now owns.");
-//        out.println("        /// </summery>");
-//        out.println("        ///");
-//        out.println("        public override Object Clone()");
-//        out.println("        {");
-//        generateCloneBody( out );
-//        out.println("        }");
-//        out.println("");
+
+        if( isCloneable() ) {
+            out.println("        ///");
+            out.println("        /// <summery>");
+            out.println("        ///  Clone this object and return a new instance that the caller now owns.");
+            out.println("        /// </summery>");
+            out.println("        ///");
+            out.println("        public override Object Clone()");
+            out.println("        {");
+            generateCloneBody( out );
+            out.println("        }");
+            out.println("");
+        }
+
         out.println("        ///");
         out.println("        /// <summery>");
         out.println("        ///  Returns a string containing the information for this DataStructure");
@@ -93,7 +100,30 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         generateAdditonalMembers( out );
         generatePropertyAccessors( out );
 
-        if( isGenIsClass() ) {
+        if( isComparable() ) {
+
+            out.println("        public override int GetHashCode()");
+            out.println("        {");
+            generateHashCodeBody(out);
+            out.println("        }");
+            out.println("");
+            out.println("        public override bool Equals(object that)");
+            out.println("        {");
+            out.println("            if(that is "+getClassName()+")");
+            out.println("            {");
+            out.println("                return Equals(("+getClassName()+") that);");
+            out.println("            }");
+            out.println("            return false;");
+            out.println("        }");
+            out.println("");
+            out.println("        public virtual bool Equals("+getClassName()+" that)");
+            out.println("        {");
+            generateEqualsBody(out);
+            out.println("        }");
+
+        }
+
+        if( getBaseClassName().equals( "BaseCommand" ) ) {
             out.println("        ///");
             out.println("        /// <summery>");
             out.println("        ///  Return an answer of true to the is"+getClassName()+"() query.");
@@ -117,7 +147,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             out.println("        ///  the proper processXXX method in the visitor." );
             out.println("        /// </summery>");
             out.println("        ///");
-            out.println("        public override Response visit( ICommandVisitor visitor )" );
+            out.println("        public override Response visit(ICommandVisitor visitor)" );
             out.println("        {");
             generateVisitBody(out);
             out.println("        }");
@@ -135,12 +165,24 @@ public class CommandClassGenerator extends CommandCodeGenerator {
 
         out.print( getBaseClassName() );
 
+        for( String name : getAdditionalBases() ) {
+            out.print( ", "+name );
+        }
+
         if( isMarshalAware() ) {
             out.print( ", MarshallAware" );
         }
 
+        if( isCloneable() ) {
+            out.print( ", ICloneable" );
+        }
+
         out.println();
         out.println("    {");
+    }
+
+    protected void generateConstructors( PrintWriter out ) {
+        // The default constructor is fine for basic Commands.
     }
 
     protected void generateProperties( PrintWriter out ) {
@@ -178,24 +220,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         out.println("            // this method is an override.");
         out.println("            " + getClassName() + " o = (" + getClassName() + ") base.Clone();");
         out.println("");
-
-        for( JProperty property : getProperties() ) {
-
-            String type = toCSharpType(property.getType());
-            String name = decapitalize(property.getSimpleName());
-
-            if( property.getType().isArrayType() ) {
-
-            } else if( !property.getType().isPrimitiveType() ) {
-
-                out.println("            if(o." + name + " != null)");
-                out.println("            {");
-                out.println("                o." + name + " = (" + type + ") o." + name + ".Clone();");
-                out.println("            }");
-                out.println("");
-            }
-
-        }
+        out.println("            return o;");
     }
 
     protected void generateAdditonalMembers( PrintWriter out ) {
@@ -216,6 +241,35 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             out.println("");
 
         }
+    }
+
+    protected void generateHashCodeBody( PrintWriter out ) {
+        out.println("            int answer = 0;");
+        out.println("");
+
+        for( JProperty property : getProperties() ) {
+            String accessorName = property.getSimpleName();
+
+            out.println("            answer = (answer * 37) + HashCode("+accessorName+");");
+        }
+
+        out.println("");
+        out.println("            return answer;");
+    }
+
+    protected void generateEqualsBody( PrintWriter out ) {
+
+        for( JProperty property : getProperties() ) {
+            String accessorName = property.getSimpleName();
+
+            out.println("            if(!Equals(this."+accessorName+", that."+accessorName+"))");
+            out.println("            {");
+            out.println("                return false;");
+            out.println("            }");
+        }
+
+        out.println("");
+        out.println("            return true;");
     }
 
 }
