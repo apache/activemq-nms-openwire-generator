@@ -57,7 +57,7 @@ public class SessionIdGenerator extends CommandClassGenerator {
     }
 
     protected void generateAdditonalMembers( PrintWriter out ) {
-        out.println("        public ConnectionId getParentId");
+        out.println("        public ConnectionId ParentId");
         out.println("        {");
         out.println("            get");
         out.println("            {");

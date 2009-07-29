@@ -21,6 +21,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.activemq.openwire.tool.MultiSourceGenerator;
@@ -77,7 +80,7 @@ public class AmqCSharpMarshallersGenerator extends MultiSourceGenerator {
     public Object run() {
         filePostFix = getFilePostFix();
         if (destDir == null) {
-            destDir = new File(targetDir+"/activemq/wireformat/openwire/marshal/v"+getOpenwireVersion());
+            destDir = new File(targetDir+"/OpenWire/V"+getOpenwireVersion());
         }
         Object answer = super.run();
         processFactory();
@@ -97,104 +100,40 @@ public class AmqCSharpMarshallersGenerator extends MultiSourceGenerator {
     }
 
     protected String getBaseClassName(JClass jclass) {
-        String answer = jclass.getSimpleName();
-
-        if( answer.equals("ActiveMQTextMessage") ) {
-            answer = "MessageMarshaller";
-        } else if( answer.equals("ActiveMQBytesMessage") ) {
-            answer = "MessageMarshaller";
-        } else if( answer.equals("ActiveMQMapMessage") ) {
-            answer = "MessageMarshaller";
-        } else if( answer.equals("ActiveMQObjectMessage") ) {
-            answer = "MessageMarshaller";
-        } else if( answer.equals("ActiveMQStreamMessage") ) {
-            answer = "MessageMarshaller";
-        } else if( answer.equals("ActiveMQBlobMessage") ) {
-            answer = "MessageMarshaller";
-        }
-
-        // We didn't map it directly so we turn it into something generic.
-        if( answer.equals( jclass.getSimpleName() ) ) {
-            answer = "BaseDataStreamMarshaller";
-            JClass superclass = jclass.getSuperclass();
-            if (superclass != null) {
-                String superName = superclass.getSimpleName();
-                if (!superName.equals("Object") && !superName.equals("JNDIBaseStorable") && !superName.equals("DataStructureSupport")) {
-                    answer = superName + "Marshaller";
-                }
+        String answer = "BaseDataStreamMarshaller";
+        JClass superclass = jclass.getSuperclass();
+        if (superclass != null) {
+            String superName = superclass.getSimpleName();
+            if (!superName.equals("Object") && !superName.equals("JNDIBaseStorable") && !superName.equals("DataStructureSupport")) {
+                answer = superName + "Marshaller";
             }
-            return answer;
         }
-
         return answer;
     }
 
-    public boolean isMarshallAware(JClass j) {
-
-        String answer = jclass.getSimpleName();
-
-        if( answer.equals("ActiveMQTextMessage") ) {
-            return true;
-        } else if( answer.equals("ActiveMQBytesMessage") ) {
-            return true;
-        } else if( answer.equals("ActiveMQMapMessage") ) {
-            return true;
-        } else if( answer.equals("ActiveMQObjectMessage") ) {
-            return true;
-        } else if( answer.equals("ActiveMQStreamMessage") ) {
-            return true;
-        } else if( answer.equals("ActiveMBlobMessage") ) {
-            return true;
-        } else {
-            return super.isMarshallAware(jclass);
-        }
-    }
+//    public boolean isMarshallAware(JClass j) {
+//
+//        String answer = jclass.getSimpleName();
+//
+//        if( answer.equals("ActiveMQTextMessage") ) {
+//            return true;
+//        } else if( answer.equals("ActiveMQBytesMessage") ) {
+//            return true;
+//        } else if( answer.equals("ActiveMQMapMessage") ) {
+//            return true;
+//        } else if( answer.equals("ActiveMQObjectMessage") ) {
+//            return true;
+//        } else if( answer.equals("ActiveMQStreamMessage") ) {
+//            return true;
+//        } else if( answer.equals("ActiveMBlobMessage") ) {
+//            return true;
+//        } else {
+//            return super.isMarshallAware(jclass);
+//        }
+//    }
 
     protected String getFilePostFix() {
-        return ".h";
-    }
-
-    public String toCppType(JClass type) {
-        String name = type.getSimpleName();
-        if (name.equals("String")) {
-            return "std::string";
-        }
-        else if( type.isArrayType() ) {
-            if( name.equals( "byte[]" ) )
-                name = "unsigned char[]";
-
-            JClass arrayClass = type.getArrayComponentType();
-
-            if( arrayClass.isPrimitiveType() ) {
-                return "std::vector<" + name.substring(0, name.length()-2) + ">";
-            } else {
-                return "std::vector<" + name.substring(0, name.length()-2) + "*>";
-            }
-        }
-        else if( name.equals( "Throwable" ) || name.equals( "Exception" ) ) {
-            return "BrokerError";
-        }
-        else if( name.equals("BaseDataStructure" ) ){
-            return "DataStructure";
-        }
-        else if( name.equals("ByteSequence") ) {
-            return "std::vector<char>";
-        }
-        else if( name.equals("boolean") ) {
-            return "bool";
-        }
-        else if( name.equals("long") ) {
-            return "long long";
-        }
-        else if( name.equals("byte") ) {
-            return "unsigned char";
-        }
-        else if( !type.isPrimitiveType() ) {
-            return name;
-        }
-        else {
-            return name;
-        }
+        return ".cs";
     }
 
     protected void generateLicence(PrintWriter out) {
@@ -219,145 +158,183 @@ out.println(" */");
     protected void generateFile(PrintWriter out) throws Exception {
         generateLicence(out);
 
-out.println("");
-out.println("#ifndef _ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSAHAL_V"+getOpenwireVersion()+"_"+className.toUpperCase()+"_H_");
-out.println("#define _ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSAHAL_V"+getOpenwireVersion()+"_"+className.toUpperCase()+"_H_");
-out.println("");
-out.println("// Turn off warning message for ignored exception specification");
-out.println("#ifdef _MSC_VER");
-out.println("#pragma warning( disable : 4290 )");
-out.println("#endif");
-out.println("");
-
-    if( baseClass.equals("BaseDataStreamMarshaller") ) {
-        out.println("#include <activemq/wireformat/openwire/marshal/"+baseClass+".h>");
-    } else {
-        out.println("#include <activemq/wireformat/openwire/marshal/v"+getOpenwireVersion()+"/"+baseClass+".h>");
-    }
-
-out.println("");
-out.println("#include <decaf/io/DataInputStream.h>");
-out.println("#include <decaf/io/DataOutputStream.h>");
-out.println("#include <decaf/io/IOException.h>");
-out.println("#include <activemq/util/Config.h>");
-out.println("#include <activemq/commands/DataStructure.h>");
-out.println("#include <activemq/wireformat/openwire/OpenWireFormat.h>");
-out.println("#include <activemq/wireformat/openwire/utils/BooleanStream.h>");
-out.println("");
-out.println("namespace activemq{");
-out.println("namespace wireformat{");
-out.println("namespace openwire{");
-out.println("namespace marshal{");
-out.println("namespace v"+getOpenwireVersion()+"{");
-out.println("");
-out.println("    /**");
-out.println("     * Marshaling code for Open Wire Format for "+className);
-out.println("     *");
-out.println("     *  NOTE!: This file is auto generated - do not modify!");
-out.println("     *         if you need to make a change, please see the Java Classes");
-out.println("     *         in the activemq-openwire-generator module");
-out.println("     */");
-out.println("    class AMQCPP_API "+className+" : public "+baseClass+" {");
-out.println("    public:");
-out.println("");
-out.println("        "+className+"() {}");
-out.println("        virtual ~"+className+"() {}");
-out.println("");
-
-    if( !isAbstractClass() ) {
-
-out.println("        /**");
-out.println("         * Creates a new instance of this marshalable type.");
-out.println("         *");
-out.println("         * @return new DataStructure object pointer caller owns it.");
-out.println("         */");
-out.println("        virtual commands::DataStructure* createObject() const;");
-out.println("");
-out.println("        /**");
-out.println("         * Get the Data Structure Type that identifies this Marshaler");
-out.println("         *");
-out.println("         * @return byte holding the data structure type value");
-out.println("         */");
-out.println("        virtual unsigned char getDataStructureType() const;");
-out.println("");
-    }
-out.println("        /**");
-out.println("         * Un-marshal an object instance from the data input stream.");
-out.println("         *");
-out.println("         * @param wireFormat - describes the wire format of the broker.");
-out.println("         * @param dataStructure - Object to be un-marshaled.");
-out.println("         * @param dataIn - BinaryReader that provides that data.");
-out.println("         * @param bs - BooleanStream stream used to unpack bits from the wire.");
-out.println("         *");
-out.println("         * @throws IOException if an error occurs during the unmarshal.");
-out.println("         */");
-out.println("        virtual void tightUnmarshal( OpenWireFormat* wireFormat,");
-out.println("                                     commands::DataStructure* dataStructure,");
-out.println("                                     decaf::io::DataInputStream* dataIn,");
-out.println("                                     utils::BooleanStream* bs ) throw( decaf::io::IOException );");
-out.println("");
-out.println("        /**");
-out.println("         * Write the booleans that this object uses to a BooleanStream");
-out.println("         *");
-out.println("         * @param wireFormat - describes the wire format of the broker");
-out.println("         * @param dataStructure - Object to be marshaled");
-out.println("         * @param bs - BooleanStream stream used to pack bits from the wire.");
-out.println("         * @returns int value indicating the size of the marshaled object.");
-out.println("         *");
-out.println("         * @throws IOException if an error occurs during the marshal.");
-out.println("         */");
-out.println("        virtual int tightMarshal1( OpenWireFormat* wireFormat,");
-out.println("                                   commands::DataStructure* dataStructure,");
-out.println("                                   utils::BooleanStream* bs ) throw( decaf::io::IOException );");
-out.println("");
-out.println("        /**");
-out.println("         * Write a object instance to data output stream");
-out.println("         *");
-out.println("         * @param wireFormat - describes the wire format of the broker");
-out.println("         * @param dataStructure - Object to be marshaled");
-out.println("         * @param dataOut - BinaryReader that provides that data sink");
-out.println("         * @param bs - BooleanStream stream used to pack bits from the wire.");
-out.println("         *");
-out.println("         * @throws IOException if an error occurs during the marshal.");
-out.println("         */");
-out.println("        virtual void tightMarshal2( OpenWireFormat* wireFormat,");
-out.println("                                    commands::DataStructure* dataStructure,");
-out.println("                                    decaf::io::DataOutputStream* dataOut,");
-out.println("                                    utils::BooleanStream* bs ) throw( decaf::io::IOException );");
-out.println("");
-out.println("        /**");
-out.println("         * Un-marshal an object instance from the data input stream");
-out.println("         *");
-out.println("         * @param wireFormat - describes the wire format of the broker");
-out.println("         * @param dataStructure - Object to be marshaled");
-out.println("         * @param dataIn - BinaryReader that provides that data source");
-out.println("         *");
-out.println("         * @throws IOException if an error occurs during the unmarshal.");
-out.println("         */");
-out.println("        virtual void looseUnmarshal( OpenWireFormat* wireFormat,");
-out.println("                                     commands::DataStructure* dataStructure,");
-out.println("                                     decaf::io::DataInputStream* dataIn ) throw( decaf::io::IOException );");
-out.println("");
-out.println("        /**");
-out.println("         * Write a object instance to data output stream");
-out.println("         *");
-out.println("         * @param wireFormat - describs the wire format of the broker");
-out.println("         * @param dataStructure - Object to be marshaled");
-out.println("         * @param dataOut - BinaryWriter that provides that data sink");
-out.println("         *");
-out.println("         * @throws IOException if an error occurs during the marshal.");
-out.println("         */");
-out.println("        virtual void looseMarshal( OpenWireFormat* wireFormat,");
-out.println("                                   commands::DataStructure* dataStructure,");
-out.println("                                   decaf::io::DataOutputStream* dataOut ) throw( decaf::io::IOException );");
-out.println("");
-out.println("    };");
-out.println("");
-out.println("}}}}}");
-out.println("");
-out.println("#endif /*_ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSAHAL_V"+getOpenwireVersion()+"_"+className.toUpperCase()+"_H_*/");
-out.println("");
+        out.println("");
+        out.println("/*");
+        out.println(" *");
+        out.println(" *  Marshaler code for OpenWire format for "+super.getClassName(jclass) );
+        out.println(" *");
+        out.println(" *  NOTE!: This file is auto generated - do not modify!");
+        out.println(" *         if you need to make a change, please see the Java Classes");
+        out.println(" *         in the nms-activemq-openwire-generator module");
+        out.println(" *");
+        out.println(" */");
+        out.println("");
+        out.println("using System;");
+        out.println("using System.Collections;");
+        out.println("using System.IO;");
+        out.println("");
+        out.println("using Apache.NMS.ActiveMQ.Commands;");
+        out.println("using Apache.NMS.ActiveMQ.OpenWire;");
+        out.println("using Apache.NMS.ActiveMQ.OpenWire.V"+getOpenwireVersion()+";");
+        out.println("");
+        out.println("namespace Apache.NMS.ActiveMQ.OpenWire.V"+getOpenwireVersion());
+        out.println("{");
+        out.println("    /// <summary>");
+        out.println("    ///  Marshalling code for Open Wire Format for "+super.getClassName(jclass));
+        out.println("    /// </summary>");
+        if( isAbstractClass() ) {
+            out.println("    abstract class "+getClassName()+" : "+getBaseClass());
+        } else {
+            out.println("    class "+getClassName()+" : "+getBaseClass());
         }
+        out.println("    {");
+
+        if (!isAbstractClass()) {
+            out.println("");
+            out.println("        public override DataStructure CreateObject() ");
+            out.println("        {");
+            out.println("            return new " + jclass.getSimpleName() + "();");
+            out.println("        }");
+            out.println("");
+            out.println("        public override byte GetDataStructureType() ");
+            out.println("        {");
+            out.println("            return " + jclass.getSimpleName() + ".ID_" + jclass.getSimpleName().toUpperCase() + ";");
+            out.println("        }");
+        }
+
+        /*
+         * Generate the tight encoding marshallers
+         */
+        out.println("");
+        out.println("        // ");
+        out.println("        // Un-marshal an object instance from the data input stream");
+        out.println("        // ");
+        out.println("        public override void TightUnmarshal(OpenWireFormat wireFormat, Object o, BinaryReader dataIn, BooleanStream bs) ");
+        out.println("        {");
+        out.println("            base.TightUnmarshal(wireFormat, o, dataIn, bs);");
+
+        if (!getProperties().isEmpty() || isMarshallerAware()) {
+            out.println("");
+            out.println("            " + jclass.getSimpleName() + " info = (" + jclass.getSimpleName() + ")o;");
+        }
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.BeforeUnmarshall(wireFormat);");
+            out.println("");
+        }
+
+        generateTightUnmarshalBody(out);
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.AfterUnmarshall(wireFormat);");
+        }
+
+        out.println("        }");
+        out.println("");
+        out.println("        //");
+        out.println("        // Write the booleans that this object uses to a BooleanStream");
+        out.println("        //");
+        out.println("        public override int TightMarshal1(OpenWireFormat wireFormat, Object o, BooleanStream bs)");
+        out.println("        {");
+
+        if( checkNeedsInfoPointerTM1() ) {
+            out.println("            " + jclass.getSimpleName() + " info = (" + jclass.getSimpleName() + ")o;");
+        }
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.BeforeMarshall(wireFormat);");
+        }
+
+        out.println("");
+        out.println("            int rc = base.TightMarshal1(wireFormat, o, bs);");
+
+        int baseSize = generateTightMarshal1Body(out);
+
+        out.println("");
+        out.println("            return rc + " + baseSize + ";");
+        out.println("        }");
+        out.println("");
+        out.println("        // ");
+        out.println("        // Write a object instance to data output stream");
+        out.println("        //");
+        out.println("        public override void TightMarshal2(OpenWireFormat wireFormat, Object o, BinaryWriter dataOut, BooleanStream bs)");
+        out.println("        {");
+        out.println("            base.TightMarshal2(wireFormat, o, dataOut, bs);");
+
+        if( checkNeedsInfoPointerTM2() ) {
+            out.println("");
+            out.println("            " + jclass.getSimpleName() + " info = (" + jclass.getSimpleName() + ")o;");
+        }
+
+        generateTightMarshal2Body(out);
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.AfterMarshall(wireFormat);");
+        }
+
+        out.println("        }");
+
+        out.println("");
+        out.println("        // ");
+        out.println("        // Un-marshal an object instance from the data input stream");
+        out.println("        // ");
+        out.println("        public override void LooseUnmarshal(OpenWireFormat wireFormat, Object o, BinaryReader dataIn) ");
+        out.println("        {");
+        out.println("            base.LooseUnmarshal(wireFormat, o, dataIn);");
+
+        if (!getProperties().isEmpty() || isMarshallerAware()) {
+            out.println("");
+            out.println("            " + jclass.getSimpleName() + " info = (" + jclass.getSimpleName() + ")o;");
+        }
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.BeforeUnmarshall(wireFormat);");
+            out.println("");
+        }
+
+        generateLooseUnmarshalBody(out);
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.AfterUnmarshall(wireFormat);");
+        }
+
+        out.println("        }");
+        out.println("");
+        out.println("        // ");
+        out.println("        // Write a object instance to data output stream");
+        out.println("        //");
+        out.println("        public override void LooseMarshal(OpenWireFormat wireFormat, Object o, BinaryWriter dataOut)");
+        out.println("        {");
+
+        if (!getProperties().isEmpty() || isMarshallerAware()) {
+            out.println("");
+            out.println("            " + jclass.getSimpleName() + " info = (" + jclass.getSimpleName() + ")o;");
+        }
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.BeforeMarshall(wireFormat);");
+        }
+
+        out.println("");
+        out.println("            base.LooseMarshal(wireFormat, o, dataOut);");
+
+        generateLooseMarshalBody(out);
+
+        if (isMarshallerAware()) {
+            out.println("");
+            out.println("            info.AfterMarshall(wireFormat);");
+        }
+        out.println("        }");
+        out.println("    }");
+        out.println("}");
+    }
 
     protected void processFactory() {
         if (factoryFile == null) {
@@ -378,42 +355,51 @@ out.println("");
 
     public void generateFactory(PrintWriter out) {
         generateLicence(out);
-out.println("#ifndef _ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSAHAL_V"+getOpenwireVersion()+"_MARSHALERFACTORY_H_");
-out.println("#define _ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSAHAL_V"+getOpenwireVersion()+"_MARSHALERFACTORY_H_");
-out.println("");
-out.println("//       Turn off warning message for ignored exception specification");
-out.println("#ifdef _MSC_VER");
-out.println("#pragma warning( disable : 4290 )");
-out.println("#endif");
-out.println("");
-out.println("#include <activemq/wireformat/openwire/OpenWireFormat.h>");
-out.println("");
-out.println("namespace activemq{");
-out.println("namespace wireformat{");
-out.println("namespace openwire{");
-out.println("namespace marshal{");
-out.println("namespace v"+getOpenwireVersion()+"{");
-out.println("");
-out.println("    /**");
-out.println("     * Used to create marshallers for a specific version of the wire");
-out.println("     * protocol.");
-out.println("     *");
-out.println("     *  NOTE!: This file is auto generated - do not modify!");
-out.println("     *         if you need to make a change, please see the Groovy scripts");
-out.println("     *         in the activemq-openwire-generator module");
-out.println("     */");
-out.println("    class MarshallerFactory {");
-out.println("    public:");
-out.println("");
-out.println("        virtual ~MarshallerFactory() {};");
-out.println("");
-out.println("        virtual void configure( OpenWireFormat* format );");
-out.println("");
-out.println("    };");
-out.println("");
-out.println("}}}}}");
-out.println("");
-out.println("#endif /*_ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSHAL_V"+getOpenwireVersion()+"_MARSHALLERFACTORY_H_*/");
+        out.println("/*");
+        out.println(" *");
+        out.println(" *  MarshallerFactory code for OpenWire Protocol Version "+getOpenwireVersion() );
+        out.println(" *");
+        out.println(" *  NOTE!: This file is auto generated - do not modify!");
+        out.println(" *         if you need to make a change, please see the Java Classes");
+        out.println(" *         in the nms-activemq-openwire-generator module");
+        out.println(" *");
+        out.println(" */");
+        out.println("");
+        out.println("using System;");
+        out.println("using System.Collections;");
+        out.println("using System.IO;");
+        out.println("");
+        out.println("using Apache.NMS.ActiveMQ.Commands;");
+        out.println("using Apache.NMS.ActiveMQ.OpenWire;");
+        out.println("using Apache.NMS.ActiveMQ.OpenWire.V" + getOpenwireVersion() + ";");
+        out.println("");
+        out.println("namespace Apache.NMS.ActiveMQ.OpenWire.V" + getOpenwireVersion() + "");
+        out.println("{");
+        out.println("    /// <summary>");
+        out.println("    ///  Used to create marshallers for a specific version of the OpenWire protocol.");
+        out.println("    ///  Each non-abstract DataStructure object has a registered Marshaller that is");
+        out.println("    ///  created and added to the OpenWireFormat objects format collection.");
+        out.println("    /// </summary>");
+        out.println("    public class MarshallerFactory : IMarshallerFactory");
+        out.println("    {");
+        out.println("        public void configure(OpenWireFormat format) ");
+        out.println("        {");
+        out.println("            format.clearMarshallers();");
+
+        List<JClass> list = new ArrayList<JClass>(getConcreteClasses());
+        Collections.sort(list, new Comparator<JClass>() {
+            public int compare(JClass o1, JClass o2) {
+                return o1.getSimpleName().compareTo(o2.getSimpleName());
+            }
+        });
+
+        for( JClass jclass : list ) {
+            out.println("            format.addMarshaller(new " + jclass.getSimpleName() + "Marshaller());");
+        }
+
+        out.println("        }");
+        out.println("    }");
+        out.println("}");
     }
 
     public List<JClass> getConcreteClasses() {
@@ -431,4 +417,371 @@ out.println("#endif /*_ACTIVEMQ_WIREFORMAT_OPENWIRE_MARSHAL_V"+getOpenwireVersio
     public void setTargetDir(String targetDir) {
         this.targetDir = targetDir;
     }
+
+    // ////////////////////////////////////////////////////////////////////////////////////
+    // This section is for the tight wire format encoding generator
+    // ////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Checks if the tightMarshal1 method needs an casted version of its
+     * dataStructure argument and then returns true or false to indicate this
+     * to the caller.
+     * @returns true if the tightMarshal1 method needs an info pointer.
+     */
+    protected boolean checkNeedsInfoPointerTM1() {
+
+        if( isMarshallerAware() ){
+            return true;
+        }
+
+        for ( JProperty property : getProperties() ) {
+            JClass propertyType = property.getType();
+            String type = propertyType.getSimpleName();
+
+            if( !( type.equals("byte") ) &&
+                !( type.equals("char") ) &&
+                !( type.equals("short") ) &&
+                !( type.equals("int") ) ) {
+
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the tightMarshal2 method needs an casted version of its
+     * dataStructure argument and then returns true or false to indicate this
+     * to the caller.
+     * @returns true if the tightMarshal2 method needs an info pointer.
+     */
+    protected boolean checkNeedsInfoPointerTM2() {
+
+        if( isMarshallerAware() ){
+            return true;
+        }
+
+        for ( JProperty property : getProperties() ) {
+            JClass propertyType = property.getType();
+            String type = propertyType.getSimpleName();
+
+            if( !type.equals("boolean") ) {
+
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    protected void generateTightUnmarshalBody(PrintWriter out) {
+        for (JProperty property : getProperties()) {
+            JAnnotation annotation = property.getAnnotation("openwire:property");
+            JAnnotationValue size = annotation.getValue("size");
+            JClass propertyType = property.getType();
+            String propertyTypeName = propertyType.getSimpleName();
+
+            if (propertyType.isArrayType() && !propertyTypeName.equals("byte[]")) {
+                generateTightUnmarshalBodyForArrayProperty(out, property, size);
+            } else {
+                generateTightUnmarshalBodyForProperty(out, property, size);
+            }
+        }
+    }
+
+    protected void generateTightUnmarshalBodyForProperty(PrintWriter out, JProperty property, JAnnotationValue size) {
+
+        String propertyName = property.getSimpleName();
+        String type = property.getType().getSimpleName();
+
+        if (type.equals("boolean")) {
+            out.println("            info." + propertyName + " = bs.ReadBoolean();");
+        } else if (type.equals("byte")) {
+            out.println("            info." + propertyName + " = dataIn.ReadByte();");
+        } else if (type.equals("char")) {
+            out.println("            info." + propertyName + " = dataIn.ReadChar();");
+        } else if (type.equals("short")) {
+            out.println("            info." + propertyName + " = dataIn.ReadInt16();");
+        } else if (type.equals("int")) {
+            out.println("            info." + propertyName + " = dataIn.ReadInt32();");
+        } else if (type.equals("long")) {
+            out.println("            info." + propertyName + " = TightUnmarshalLong(wireFormat, dataIn, bs);");
+        } else if (type.equals("String")) {
+            out.println("            info." + propertyName + " = TightUnmarshalString(dataIn, bs);");
+        } else if (type.equals("byte[]") || type.equals("ByteSequence")) {
+            if (size != null) {
+                out.println("            info." + propertyName + " = ReadBytes(dataIn, " + size.asInt() + ");");
+            } else {
+                out.println("            info." + propertyName + " = ReadBytes(dataIn, bs.ReadBoolean());");
+            }
+        } else if (isThrowable(property.getType())) {
+            out.println("            info." + propertyName + " = TightUnmarshalBrokerError(wireFormat, dataIn, bs);");
+        } else if (isCachedProperty(property)) {
+            out.println("            info." + propertyName + " = (" + type + ") TightUnmarshalCachedObject(wireFormat, dataIn, bs);");
+        } else {
+            out.println("            info." + propertyName + " = (" + type + ") TightUnmarshalNestedObject(wireFormat, dataIn, bs);");
+        }
+    }
+
+    protected void generateTightUnmarshalBodyForArrayProperty(PrintWriter out, JProperty property, JAnnotationValue size) {
+        JClass propertyType = property.getType();
+        String arrayType = propertyType.getArrayComponentType().getSimpleName();
+        String propertyName = property.getSimpleName();
+        out.println();
+        if (size != null) {
+            out.println("            {");
+            out.println("                " + arrayType + "[] value = new " + arrayType + "[" + size.asInt() + "];");
+            out.println("                " + "for( int i=0; i < " + size.asInt() + "; i++ ) {");
+            out.println("                    value[i] = (" + arrayType + ") TightUnmarshalNestedObject(wireFormat,dataIn, bs);");
+            out.println("                }");
+            out.println("                info." + propertyName + " = value;");
+            out.println("            }");
+        } else {
+            out.println("            if (bs.ReadBoolean()) {");
+            out.println("                short size = dataIn.ReadInt16();");
+            out.println("                " + arrayType + "[] value = new " + arrayType + "[size];");
+            out.println("                for( int i=0; i < size; i++ ) {");
+            out.println("                    value[i] = (" + arrayType + ") TightUnmarshalNestedObject(wireFormat,dataIn, bs);");
+            out.println("                }");
+            out.println("                info." + propertyName + " = value;");
+            out.println("            }");
+            out.println("            else {");
+            out.println("                info." + propertyName + " = null;");
+            out.println("            }");
+        }
+    }
+
+    protected int generateTightMarshal1Body(PrintWriter out) {
+        int baseSize = 0;
+        for (JProperty property : getProperties()) {
+            JAnnotation annotation = property.getAnnotation("openwire:property");
+            JAnnotationValue size = annotation.getValue("size");
+            JClass propertyType = property.getType();
+            String type = propertyType.getSimpleName();
+            String getter = "info." + property.getSimpleName();
+
+            if (type.equals("boolean")) {
+                out.println("            bs.WriteBoolean(" + getter + ");");
+            } else if (type.equals("byte")) {
+                baseSize += 1;
+            } else if (type.equals("char")) {
+                baseSize += 2;
+            } else if (type.equals("short")) {
+                baseSize += 2;
+            } else if (type.equals("int")) {
+                baseSize += 4;
+            } else if (type.equals("long")) {
+                out.println("            rc += TightMarshalLong1(wireFormat, " + getter + ", bs);");
+            } else if (type.equals("String")) {
+                out.print("");
+                out.println("            rc += TightMarshalString1(" + getter + ", bs);");
+            } else if (type.equals("byte[]") || type.equals("ByteSequence")) {
+                if (size == null) {
+                    out.println("            bs.WriteBoolean(" + getter + "!=null);");
+                    out.println("            rc += " + getter + "==null ? 0 : " + getter + ".Length+4;");
+                } else {
+                    baseSize += size.asInt();
+                }
+            } else if (propertyType.isArrayType()) {
+                if (size != null) {
+                    out.println("            rc += TightMarshalObjectArrayConstSize1(wireFormat, " + getter + ", bs, " + size.asInt() + ");");
+                } else {
+                    out.println("            rc += TightMarshalObjectArray1(wireFormat, " + getter + ", bs);");
+                }
+            } else if (isThrowable(propertyType)) {
+                out.println("            rc += TightMarshalBrokerError1(wireFormat, " + getter + ", bs);");
+            } else {
+                if (isCachedProperty(property)) {
+                    out.println("            rc += TightMarshalCachedObject1(wireFormat, (DataStructure)" + getter + ", bs);");
+                } else {
+                    out.println("        rc += TightMarshalNestedObject1(wireFormat, (DataStructure)" + getter + ", bs);");
+                }
+            }
+        }
+        return baseSize;
+    }
+
+    protected void generateTightMarshal2Body(PrintWriter out) {
+        for (JProperty property : getProperties()) {
+            JAnnotation annotation = property.getAnnotation("openwire:property");
+            JAnnotationValue size = annotation.getValue("size");
+            JClass propertyType = property.getType();
+            String type = propertyType.getSimpleName();
+            String getter = "info." + property.getSimpleName();
+
+            if (type.equals("boolean")) {
+                out.println("            bs.ReadBoolean();");
+            } else if (type.equals("byte")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("char")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("short")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("int")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("long")) {
+                out.println("            TightMarshalLong2(wireFormat, " + getter + ", dataOut, bs);");
+            } else if (type.equals("String")) {
+                out.println("            TightMarshalString2(" + getter + ", dataOut, bs);");
+            } else if (type.equals("byte[]") || type.equals("ByteSequence")) {
+                if (size != null) {
+                    out.println("            dataOut.Write(" + getter + ", 0, " + size.asInt() + ");");
+                } else {
+                    out.println("            if(bs.ReadBoolean()) {");
+                    out.println("                dataOut.Write(" + getter + ".Length);");
+                    out.println("                dataOut.Write(" + getter + ");");
+                    out.println("            }");
+                }
+            } else if (propertyType.isArrayType()) {
+                if (size != null) {
+                    out.println("            TightMarshalObjectArrayConstSize2(wireFormat, " + getter + ", dataOut, bs, " + size.asInt() + ");");
+                } else {
+                    out.println("            TightMarshalObjectArray2(wireFormat, " + getter + ", dataOut, bs);");
+                }
+            } else if (isThrowable(propertyType)) {
+                out.println("            TightMarshalBrokerError2(wireFormat, " + getter + ", dataOut, bs);");
+            } else {
+                if (isCachedProperty(property)) {
+                    out.println("            TightMarshalCachedObject2(wireFormat, (DataStructure)" + getter + ", dataOut, bs);");
+                } else {
+                    out.println("            TightMarshalNestedObject2(wireFormat, (DataStructure)" + getter + ", dataOut, bs);");
+                }
+            }
+        }
+    }
+
+    // ////////////////////////////////////////////////////////////////////////////////////
+    // This section is for the loose wire format encoding generator
+    // ////////////////////////////////////////////////////////////////////////////////////
+
+    protected void generateLooseUnmarshalBody(PrintWriter out) {
+        for (JProperty property : getProperties()) {
+            JAnnotation annotation = property.getAnnotation("openwire:property");
+            JAnnotationValue size = annotation.getValue("size");
+            JClass propertyType = property.getType();
+            String propertyTypeName = propertyType.getSimpleName();
+
+            if (propertyType.isArrayType() && !propertyTypeName.equals("byte[]")) {
+                generateLooseUnmarshalBodyForArrayProperty(out, property, size);
+            } else {
+                generateLooseUnmarshalBodyForProperty(out, property, size);
+            }
+        }
+    }
+
+    protected void generateLooseUnmarshalBodyForProperty(PrintWriter out, JProperty property, JAnnotationValue size) {
+
+        String propertyName = property.getSimpleName();
+        String type = property.getType().getSimpleName();
+
+        if (type.equals("boolean")) {
+            out.println("            info." + propertyName + " = dataIn.ReadBoolean();");
+        } else if (type.equals("byte")) {
+            out.println("            info." + propertyName + " = dataIn.ReadByte();");
+        } else if (type.equals("char")) {
+            out.println("            info." + propertyName + " = dataIn.ReadChar();");
+        } else if (type.equals("short")) {
+            out.println("            info." + propertyName + " = dataIn.ReadInt16();");
+        } else if (type.equals("int")) {
+            out.println("            info." + propertyName + " = dataIn.ReadInt32();");
+        } else if (type.equals("long")) {
+            out.println("            info." + propertyName + " = LooseUnmarshalLong(wireFormat, dataIn);");
+        } else if (type.equals("String")) {
+            out.println("            info." + propertyName + " = LooseUnmarshalString(dataIn);");
+        } else if (type.equals("byte[]") || type.equals("ByteSequence")) {
+            if (size != null) {
+                out.println("            info." + propertyName + " = ReadBytes(dataIn, " + size.asInt() + ");");
+            } else {
+                out.println("            info." + propertyName + " = ReadBytes(dataIn, dataIn.ReadBoolean());");
+            }
+        } else if (isThrowable(property.getType())) {
+            out.println("            info." + propertyName + " = LooseUnmarshalBrokerError(wireFormat, dataIn);");
+        } else if (isCachedProperty(property)) {
+            out.println("            info." + propertyName + " = (" + type + ") LooseUnmarshalCachedObject(wireFormat, dataIn);");
+        } else {
+            out.println("            info." + propertyName + " = (" + type + ") LooseUnmarshalNestedObject(wireFormat, dataIn);");
+        }
+    }
+
+    protected void generateLooseUnmarshalBodyForArrayProperty(PrintWriter out, JProperty property, JAnnotationValue size) {
+        JClass propertyType = property.getType();
+        String arrayType = propertyType.getArrayComponentType().getSimpleName();
+        String propertyName = property.getSimpleName();
+        out.println();
+        if (size != null) {
+            out.println("            {");
+            out.println("                " + arrayType + "[] value = new " + arrayType + "[" + size.asInt() + "];");
+            out.println("                " + "for( int i=0; i < " + size.asInt() + "; i++ ) {");
+            out.println("                    value[i] = (" + arrayType + ") LooseUnmarshalNestedObject(wireFormat,dataIn);");
+            out.println("                }");
+            out.println("                info." + propertyName + " = value;");
+            out.println("            }");
+        } else {
+            out.println("            if (dataIn.ReadBoolean()) {");
+            out.println("                short size = dataIn.ReadInt16();");
+            out.println("                " + arrayType + "[] value = new " + arrayType + "[size];");
+            out.println("                for( int i=0; i < size; i++ ) {");
+            out.println("                    value[i] = (" + arrayType + ") LooseUnmarshalNestedObject(wireFormat,dataIn);");
+            out.println("                }");
+            out.println("                info." + propertyName + " = value;");
+            out.println("            }");
+            out.println("            else {");
+            out.println("                info." + propertyName + " = null;");
+            out.println("            }");
+        }
+    }
+
+    protected void generateLooseMarshalBody(PrintWriter out) {
+        for (JProperty property : getProperties()) {
+            JAnnotation annotation = property.getAnnotation("openwire:property");
+            JAnnotationValue size = annotation.getValue("size");
+            JClass propertyType = property.getType();
+            String type = propertyType.getSimpleName();
+            String getter = "info." + property.getSimpleName();
+
+            if (type.equals("boolean")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("byte")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("char")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("short")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("int")) {
+                out.println("            dataOut.Write(" + getter + ");");
+            } else if (type.equals("long")) {
+                out.println("            LooseMarshalLong(wireFormat, " + getter + ", dataOut);");
+            } else if (type.equals("String")) {
+                out.println("            LooseMarshalString(" + getter + ", dataOut);");
+            } else if (type.equals("byte[]") || type.equals("ByteSequence")) {
+                if (size != null) {
+                    out.println("            dataOut.Write(" + getter + ", 0, " + size.asInt() + ");");
+                } else {
+                    out.println("            dataOut.Write(" + getter + "!=null);");
+                    out.println("            if(" + getter + "!=null) {");
+                    out.println("               dataOut.Write(" + getter + ".Length);");
+                    out.println("               dataOut.Write(" + getter + ");");
+                    out.println("            }");
+                }
+            } else if (propertyType.isArrayType()) {
+                if (size != null) {
+                    out.println("            LooseMarshalObjectArrayConstSize(wireFormat, " + getter + ", dataOut, " + size.asInt() + ");");
+                } else {
+                    out.println("            LooseMarshalObjectArray(wireFormat, " + getter + ", dataOut);");
+                }
+            } else if (isThrowable(propertyType)) {
+                out.println("            LooseMarshalBrokerError(wireFormat, " + getter + ", dataOut);");
+            } else {
+                if (isCachedProperty(property)) {
+                    out.println("            LooseMarshalCachedObject(wireFormat, (DataStructure)" + getter + ", dataOut);");
+                } else {
+                    out.println("            LooseMarshalNestedObject(wireFormat, (DataStructure)" + getter + ", dataOut);");
+                }
+            }
+        }
+    }
+
 }
