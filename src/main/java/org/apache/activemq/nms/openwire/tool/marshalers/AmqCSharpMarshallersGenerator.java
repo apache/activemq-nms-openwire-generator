@@ -111,27 +111,6 @@ public class AmqCSharpMarshallersGenerator extends MultiSourceGenerator {
         return answer;
     }
 
-//    public boolean isMarshallAware(JClass j) {
-//
-//        String answer = jclass.getSimpleName();
-//
-//        if( answer.equals("ActiveMQTextMessage") ) {
-//            return true;
-//        } else if( answer.equals("ActiveMQBytesMessage") ) {
-//            return true;
-//        } else if( answer.equals("ActiveMQMapMessage") ) {
-//            return true;
-//        } else if( answer.equals("ActiveMQObjectMessage") ) {
-//            return true;
-//        } else if( answer.equals("ActiveMQStreamMessage") ) {
-//            return true;
-//        } else if( answer.equals("ActiveMBlobMessage") ) {
-//            return true;
-//        } else {
-//            return super.isMarshallAware(jclass);
-//        }
-//    }
-
     protected String getFilePostFix() {
         return ".cs";
     }
@@ -190,21 +169,23 @@ out.println(" */");
         out.println("    {");
 
         if (!isAbstractClass()) {
-            out.println("");
+            out.println("        /// <summery>");
+            out.println("        ///  Creates an instance of the Object that this marshaller handles.");
+            out.println("        /// </summery>");
             out.println("        public override DataStructure CreateObject() ");
             out.println("        {");
             out.println("            return new " + jclass.getSimpleName() + "();");
             out.println("        }");
             out.println("");
+            out.println("        /// <summery>");
+            out.println("        ///  Returns the type code for the Object that this Marshaller handles..");
+            out.println("        /// </summery>");
             out.println("        public override byte GetDataStructureType() ");
             out.println("        {");
             out.println("            return " + jclass.getSimpleName() + ".ID_" + jclass.getSimpleName().toUpperCase() + ";");
             out.println("        }");
         }
 
-        /*
-         * Generate the tight encoding marshallers
-         */
         out.println("");
         out.println("        // ");
         out.println("        // Un-marshal an object instance from the data input stream");
@@ -277,7 +258,6 @@ out.println(" */");
         }
 
         out.println("        }");
-
         out.println("");
         out.println("        // ");
         out.println("        // Un-marshal an object instance from the data input stream");
@@ -331,6 +311,7 @@ out.println(" */");
             out.println("");
             out.println("            info.AfterMarshall(wireFormat);");
         }
+
         out.println("        }");
         out.println("    }");
         out.println("}");
@@ -382,6 +363,10 @@ out.println(" */");
         out.println("    /// </summary>");
         out.println("    public class MarshallerFactory : IMarshallerFactory");
         out.println("    {");
+        out.println("        /// <summery>");
+        out.println("        ///  Adds the Marshallers for this version of the OpenWire protocol to the ");
+        out.println("        ///  Collection of Marshallers stored in the OpenWireFormat class.");
+        out.println("        /// </summery>");
         out.println("        public void configure(OpenWireFormat format) ");
         out.println("        {");
         out.println("            format.clearMarshallers();");
