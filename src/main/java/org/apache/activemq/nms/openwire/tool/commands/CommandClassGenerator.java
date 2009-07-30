@@ -55,11 +55,8 @@ public class CommandClassGenerator extends CommandCodeGenerator {
 
         generateProperties( out );
 
-        out.println("");
-
         generateConstructors(out);
 
-        out.println("");
         out.println("        ///");
         out.println("        /// <summery>");
         out.println("        ///  Get the unique identifier that this object and its own");
@@ -155,7 +152,6 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         }
 
         out.println("    };");
-        out.println("");
         out.println("}");
         out.println("");
     }
@@ -187,12 +183,18 @@ public class CommandClassGenerator extends CommandCodeGenerator {
 
     protected void generateProperties( PrintWriter out ) {
 
+        if( getProperties().isEmpty() ) {
+            return;
+        }
+
         for( JProperty property : getProperties() ) {
             String type = toCSharpType(property.getType());
             String name = decapitalize(property.getSimpleName());
 
             out.println("        "+type+" "+name+";");
         }
+
+        out.println("");
     }
 
     protected void generateVisitBody( PrintWriter out ) {

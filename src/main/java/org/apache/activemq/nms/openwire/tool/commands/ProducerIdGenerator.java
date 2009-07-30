@@ -22,10 +22,12 @@ public class ProducerIdGenerator extends CommandClassGenerator {
 
     protected void generateConstructors( PrintWriter out ) {
 
-        out.println("        public "+getClassName()+"() {");
+        out.println("        public "+getClassName()+"()");
+        out.println("        {");
         out.println("        }");
         out.println("");
-        out.println("        public "+getClassName()+"( SessionId sessionId, long consumerId ) {");
+        out.println("        public "+getClassName()+"( SessionId sessionId, long consumerId )");
+        out.println("        {");
         out.println("            this.connectionId = sessionId.ConnectionId;");
         out.println("            this.sessionId = sessionId.Value;");
         out.println("            this.value = consumerId;");
