@@ -29,11 +29,59 @@ public class MessageGenerator extends CommandClassGenerator {
     protected void generateProperties( PrintWriter out ) {
 
         super.generateProperties(out);
+
+        out.println("        protected bool readOnlyMsgProperties;");
+        out.println("        protected bool readOnlyMsgBody;");
+        out.println("");
+        out.println("        public const int DEFAULT_MINIMUM_MESSAGE_SIZE = 1024;");
+        out.println("");
+
+    }
+
+    protected void generatePropertyAccessors( PrintWriter out ) {
+
+        super.generatePropertyAccessors(out);
+
+        out.println("        public bool ReadOnlyProperties" );
+        out.println("        {");
+        out.println("            get { return readOnlyMsgProperties; }" );
+        out.println("            set { readOnlyMsgProperties = value; }");
+        out.println("        }");
+        out.println("");
+        out.println("        public bool ReadOnlyBody" );
+        out.println("        {");
+        out.println("            get { return readOnlyMsgBody; }" );
+        out.println("            set { readOnlyMsgBody = value; }");
+        out.println("        }");
+        out.println("");
     }
 
     protected void generateAdditonalMembers( PrintWriter out ) {
 
         super.generateAdditonalMembers( out );
+
+        out.println("        public int Size()" );
+        out.println("        {");
+        out.println("            int size = DEFAULT_MINIMUM_MESSAGE_SIZE;");
+        out.println("");
+        out.println("            if(marshalledProperties != null)");
+        out.println("            {");
+        out.println("                size += marshalledProperties.Length;");
+        out.println("            }");
+        out.println("            if(content != null)");
+        out.println("            {");
+        out.println("                size += content.Length;");
+        out.println("            }");
+        out.println("");
+        out.println("            return size;");
+        out.println("        }");
+        out.println("");
+        out.println("        public void OnSend()" );
+        out.println("        {");
+        out.println("            this.ReadOnlyProperties = true;" );
+        out.println("            this.ReadOnlyBody = true;");
+        out.println("        }");
+        out.println("");
     }
 
     protected void generateCloneBody( PrintWriter out ) {
