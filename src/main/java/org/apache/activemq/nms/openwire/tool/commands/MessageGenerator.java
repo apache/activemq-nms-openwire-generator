@@ -60,7 +60,7 @@ public class MessageGenerator extends CommandClassGenerator {
 
         super.generateAdditonalMembers( out );
 
-        out.println("        public int Size()" );
+        out.println("        public virtual int Size()" );
         out.println("        {");
         out.println("            int size = DEFAULT_MINIMUM_MESSAGE_SIZE;");
         out.println("");
@@ -76,7 +76,7 @@ public class MessageGenerator extends CommandClassGenerator {
         out.println("            return size;");
         out.println("        }");
         out.println("");
-        out.println("        public void OnSend()" );
+        out.println("        public virtual void OnSend()" );
         out.println("        {");
         out.println("            this.ReadOnlyProperties = true;" );
         out.println("            this.ReadOnlyBody = true;");
