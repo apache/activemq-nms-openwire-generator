@@ -30,8 +30,8 @@ public class MessageGenerator extends CommandClassGenerator {
 
         super.generateProperties(out);
 
-        out.println("        protected bool readOnlyMsgProperties;");
-        out.println("        protected bool readOnlyMsgBody;");
+        out.println("        private bool readOnlyMsgProperties;");
+        out.println("        private bool readOnlyMsgBody;");
         out.println("");
         out.println("        public const int DEFAULT_MINIMUM_MESSAGE_SIZE = 1024;");
         out.println("");
@@ -42,16 +42,16 @@ public class MessageGenerator extends CommandClassGenerator {
 
         super.generatePropertyAccessors(out);
 
-        out.println("        public bool ReadOnlyProperties" );
+        out.println("        public virtual bool ReadOnlyProperties" );
         out.println("        {");
-        out.println("            get { return readOnlyMsgProperties; }" );
-        out.println("            set { readOnlyMsgProperties = value; }");
+        out.println("            get { return this.readOnlyMsgProperties; }" );
+        out.println("            set { this.readOnlyMsgProperties = value; }");
         out.println("        }");
         out.println("");
-        out.println("        public bool ReadOnlyBody" );
+        out.println("        public virtual bool ReadOnlyBody" );
         out.println("        {");
-        out.println("            get { return readOnlyMsgBody; }" );
-        out.println("            set { readOnlyMsgBody = value; }");
+        out.println("            get { return this.readOnlyMsgBody; }" );
+        out.println("            set { this.readOnlyMsgBody = value; }");
         out.println("        }");
         out.println("");
     }
