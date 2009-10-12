@@ -33,6 +33,17 @@ public class ProducerIdGenerator extends CommandClassGenerator {
         out.println("            this.value = consumerId;");
         out.println("        }");
         out.println("");
+        out.println("        public "+getClassName()+"(string producerKey)");
+        out.println("        {");
+        out.println("            // Parse off the producerId");
+        out.println("            int p = producerKey.LastIndexOf(\":\");");
+        out.println("            if(p >= 0)");
+        out.println("            {");
+        out.println("                value = Int64.Parse(producerKey.Substring(p + 1));");
+        out.println("                producerKey = producerKey.Substring(0, p);");
+        out.println("            }");
+        out.println("        }");
+        out.println("");
 
         super.generateConstructors(out);
     }
@@ -57,6 +68,7 @@ public class ProducerIdGenerator extends CommandClassGenerator {
         out.println("            }");
         out.println("        }");
         out.println("");
+
 
         super.generateAdditonalMembers( out );
     }
