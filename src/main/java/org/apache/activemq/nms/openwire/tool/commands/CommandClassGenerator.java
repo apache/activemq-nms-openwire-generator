@@ -27,13 +27,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         // Start with the license.
         generateLicence(out);
 
-        out.println("using System;");
-        out.println("using System.Collections;");
-
-        if( getBaseClassName().equals( "BaseCommand" ) ) {
-            out.println("");
-            out.println("using Apache.NMS.ActiveMQ.State;");
-        }
+        generateUsingDirectives(out);
 
         out.println("");
         out.println("namespace Apache.NMS.ActiveMQ.Commands");
@@ -154,6 +148,16 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         out.println("    };");
         out.println("}");
         out.println("");
+    }
+
+    protected void generateUsingDirectives( PrintWriter out ) {
+        out.println("using System;");
+        out.println("using System.Collections;");
+
+        if( getBaseClassName().equals( "BaseCommand" ) ) {
+            out.println("");
+            out.println("using Apache.NMS.ActiveMQ.State;");
+        }
     }
 
     protected void generateClassDefinition( PrintWriter out ) {

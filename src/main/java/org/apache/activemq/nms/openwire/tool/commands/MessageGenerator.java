@@ -26,6 +26,12 @@ public class MessageGenerator extends CommandClassGenerator {
         super.addAdditionalBase("MessageReference");
     }
 
+    protected void generateUsingDirectives( PrintWriter out ) {
+        super.generateUsingDirectives(out);
+
+        out.println("using Apache.NMS.Util;");
+    }
+
     protected void generateProperties( PrintWriter out ) {
 
         super.generateProperties(out);
@@ -80,6 +86,11 @@ public class MessageGenerator extends CommandClassGenerator {
         out.println("        {");
         out.println("            this.ReadOnlyProperties = true;" );
         out.println("            this.ReadOnlyBody = true;");
+        out.println("        }");
+        out.println("");
+        out.println("        public bool IsExpired()");
+        out.println("        {");
+        out.println("            return this.expiration == 0 ? false : DateTime.UtcNow > DateUtils.ToDateTimeUtc(this.expiration);");
         out.println("        }");
         out.println("");
     }
