@@ -88,6 +88,11 @@ public class MessageGenerator extends CommandClassGenerator {
         out.println("            this.ReadOnlyBody = true;");
         out.println("        }");
         out.println("");
+        out.println("        public virtual void OnMessageRollback()" );
+        out.println("        {");
+        out.println("            this.redeliveryCounter++;" );
+        out.println("        }");
+        out.println("");
         out.println("        public bool IsExpired()");
         out.println("        {");
         out.println("            return this.expiration == 0 ? false : DateTime.UtcNow > DateUtils.ToDateTimeUtc(this.expiration);");
