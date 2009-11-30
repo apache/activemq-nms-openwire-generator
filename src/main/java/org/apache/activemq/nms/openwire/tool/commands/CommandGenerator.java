@@ -84,7 +84,7 @@ public class CommandGenerator extends MultiSourceGenerator {
         generator.setClassName( getClassName() );
         generator.setBaseClassName( getBaseClass() );
         generator.setOpenWireOpCode( getOpenWireOpCode(getJclass()) );
-        generator.setComparable( className.endsWith("Id") );
+        generator.setComparable( className.endsWith("Id") || generator.isComparable() );
 
         PrintWriter out = null;
         try {
