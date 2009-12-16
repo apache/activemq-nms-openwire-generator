@@ -18,6 +18,8 @@ package org.apache.activemq.nms.openwire.tool.commands;
 
 import java.io.PrintWriter;
 
+import org.codehaus.jam.JProperty;
+
 public class ConnectionIdGenerator extends CommandClassGenerator {
 
     protected void generateConstructors( PrintWriter out ) {
@@ -42,5 +44,9 @@ public class ConnectionIdGenerator extends CommandClassGenerator {
         out.println("");
 
         super.generateConstructors(out);
+    }
+
+    protected void generateToStringBody( PrintWriter out ) {
+        out.println("            return this.value;");
     }
 }

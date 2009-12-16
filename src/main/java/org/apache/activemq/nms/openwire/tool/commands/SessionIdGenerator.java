@@ -56,6 +56,10 @@ public class SessionIdGenerator extends CommandClassGenerator {
         super.generateProperties(out);
     }
 
+    protected void generateToStringBody( PrintWriter out ) {
+        out.println("            return this.connectionId + \":\" + this.value;");
+    }
+
     protected void generateAdditonalMembers( PrintWriter out ) {
         out.println("        public ConnectionId ParentId");
         out.println("        {");

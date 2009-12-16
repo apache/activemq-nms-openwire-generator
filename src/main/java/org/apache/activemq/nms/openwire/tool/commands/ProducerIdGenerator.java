@@ -56,6 +56,10 @@ public class ProducerIdGenerator extends CommandClassGenerator {
         super.generateProperties(out);
     }
 
+    protected void generateToStringBody( PrintWriter out ) {
+        out.println("            return this.connectionId + \":\" + this.sessionId + \":\" + this.value;");
+    }
+
     protected void generateAdditonalMembers( PrintWriter out ) {
         out.println("        public SessionId ParentId");
         out.println("        {");

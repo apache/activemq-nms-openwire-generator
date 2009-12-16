@@ -37,6 +37,10 @@ public class ConsumerIdGenerator extends CommandClassGenerator {
         super.generateConstructors(out);
     }
 
+    protected void generateToStringBody( PrintWriter out ) {
+        out.println("            return this.connectionId + \":\" + this.sessionId + \":\" + this.value;");
+    }
+
     protected void generateProperties( PrintWriter out ) {
 
         out.println("        private SessionId parentId = null;");

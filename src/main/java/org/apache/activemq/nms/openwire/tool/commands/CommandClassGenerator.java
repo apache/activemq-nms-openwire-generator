@@ -207,12 +207,17 @@ public class CommandClassGenerator extends CommandCodeGenerator {
 
     protected void generateToStringBody( PrintWriter out ) {
 
-        out.println("            return GetType().Name + \"[\" + ");
+        out.println("            return GetType().Name + \"[ \" + ");
+
+        if( getBaseClassName().equals( "BaseCommand" ) ) {
+            out.println("                \"commandId = \" + this.CommandId + \" \" + " );
+            out.println("                \"responseRequired = \" + this.ResponseRequired + \" \" + " );
+        }
 
         for( JProperty property : getProperties() ) {
             String name = property.getSimpleName();
 
-            out.println("                \"" + name + "=\" + " + name + " + " );
+            out.println("                \"" + name + " = \" + " + name + " + \" \" + " );
         }
 
         out.println("                \"]\";");
