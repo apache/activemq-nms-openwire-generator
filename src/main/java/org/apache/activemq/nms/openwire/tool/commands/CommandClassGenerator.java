@@ -210,17 +210,24 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         out.println("            return GetType().Name + \"[ \" + ");
 
         if( getBaseClassName().equals( "BaseCommand" ) ) {
-            out.println("                \"commandId = \" + this.CommandId + \" \" + " );
-            out.println("                \"responseRequired = \" + this.ResponseRequired + \" \" + " );
+            out.println("                \"commandId = \" + this.CommandId + \", \" + " );
+            out.println("                \"responseRequired = \" + this.ResponseRequired + \", \" + " );
         }
+
+        int size = getProperties().size();
+        int count = 0;
 
         for( JProperty property : getProperties() ) {
             String name = property.getSimpleName();
 
-            out.println("                \"" + name + " = \" + " + name + " + \" \" + " );
+            out.print("                \"" + name + " = \" + " + name + " + ");
+
+            if( ++count != size ) {
+                out.println("\", \" + ");
+            }
         }
 
-        out.println("                \"]\";");
+        out.println("\" ]\";");
     }
 
     protected void generateCloneBody( PrintWriter out ) {
