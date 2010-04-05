@@ -145,6 +145,12 @@ public abstract class CommandCodeGenerator {
         else if( name.equals("ByteSequence") ) {
             return "byte[]";
         }
+        else if( name.equals("Comparable") ) {
+            return null;
+        }
+        else if( name.equals("MarshallAware") ) {
+            return null;
+        }
         else if( name.equals("boolean") ) {
             return "bool";
         }

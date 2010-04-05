@@ -86,6 +86,15 @@ public class CommandGenerator extends MultiSourceGenerator {
         generator.setOpenWireOpCode( getOpenWireOpCode(getJclass()) );
         generator.setComparable( className.endsWith("Id") || generator.isComparable() );
 
+        for (int i = 0; i < getJclass().getInterfaces().length; i++) {
+            JClass intf = getJclass().getInterfaces()[i];
+
+            String name = generator.toCSharpType( intf );
+            if( name != null && !name.endsWith("DataStructure") && !name.equals("Command") ) {
+                generator.addAdditionalBase( name );
+            }
+        }
+
         PrintWriter out = null;
         try {
             out = new PrintWriter(new FileWriter(headerFile));
