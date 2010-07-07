@@ -61,7 +61,7 @@
   </mailingLists>
 
   <properties>
-    <activemq-version>5.3.1</activemq-version>
+    <activemq-version>5.4-SNAPSHOT</activemq-version>
     <projectName>Apache NMS.ActiveMQ</projectName>
     <annogen-version>0.1.0</annogen-version>
     <ant-version>1.6.2</ant-version>
@@ -139,7 +139,7 @@
           <tasks>
             <echo>Running OpenWire Generator</echo>
             <taskdef name="generate" classname="org.apache.activemq.nms.openwire.tool.AmqCSharpGeneratorTask" classpathref="maven.compile.classpath" />
-            <generate maxVersion="5" source="${activemq-core-dir}" target="${nms-activemq-dir}" />
+            <generate maxVersion="6" source="${activemq-core-dir}" target="${nms-activemq-dir}" />
           </tasks>
         </configuration>
       </plugin>
