@@ -197,7 +197,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
     }
 
     protected void generateVisitBody( PrintWriter out ) {
-        out.println("            return visitor.process"+getClassName()+"( this );");
+        out.println("            return visitor.process"+getClassName()+"(this);");
     }
 
     protected void generateToStringBody( PrintWriter out ) {
@@ -257,17 +257,22 @@ public class CommandClassGenerator extends CommandCodeGenerator {
     }
 
     protected void generateHashCodeBody( PrintWriter out ) {
-        out.println("            int answer = 0;");
-        out.println("");
 
-        for( JProperty property : getProperties() ) {
-            String accessorName = property.getSimpleName();
+        if( getProperties().isEmpty() ) {
+            out.println("            return HashCode(this);");
+        } else {
+            out.println("            int answer = 0;");
+            out.println("");
 
-            out.println("            answer = (answer * 37) + HashCode("+accessorName+");");
+            for( JProperty property : getProperties() ) {
+                String accessorName = property.getSimpleName();
+
+                out.println("            answer = (answer * 37) + HashCode("+accessorName+");");
+            }
+
+            out.println("");
+            out.println("            return answer;");
         }
-
-        out.println("");
-        out.println("            return answer;");
     }
 
     protected void generateEqualsBody( PrintWriter out ) {
