@@ -104,6 +104,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             out.println("            {");
             out.println("                return Equals(("+getClassName()+") that);");
             out.println("            }");
+            out.println("");
             out.println("            return false;");
             out.println("        }");
             out.println("");
@@ -202,6 +203,11 @@ public class CommandClassGenerator extends CommandCodeGenerator {
 
     protected void generateToStringBody( PrintWriter out ) {
 
+        if( getProperties().isEmpty() ) {
+            out.println("            return GetType().Name + \"[ ]\";");
+            return;
+        }
+
         out.println("            return GetType().Name + \"[ \" + ");
 
         if( getBaseClassName().equals( "BaseCommand" ) ) {
@@ -277,16 +283,19 @@ public class CommandClassGenerator extends CommandCodeGenerator {
 
     protected void generateEqualsBody( PrintWriter out ) {
 
-        for( JProperty property : getProperties() ) {
-            String accessorName = property.getSimpleName();
+        if( !getProperties().isEmpty() ) {
+            for( JProperty property : getProperties() ) {
+                String accessorName = property.getSimpleName();
 
-            out.println("            if(!Equals(this."+accessorName+", that."+accessorName+"))");
-            out.println("            {");
-            out.println("                return false;");
-            out.println("            }");
+                out.println("            if(!Equals(this."+accessorName+", that."+accessorName+"))");
+                out.println("            {");
+                out.println("                return false;");
+                out.println("            }");
+            }
+
+            out.println("");
         }
 
-        out.println("");
         out.println("            return true;");
     }
 
