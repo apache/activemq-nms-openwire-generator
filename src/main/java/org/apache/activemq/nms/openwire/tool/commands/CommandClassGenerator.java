@@ -122,10 +122,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             out.println("        ///");
             out.println("        public override bool Is"+getClassName());
             out.println("        {");
-            out.println("            get");
-            out.println("            {");
-            out.println("                return true;");
-            out.println("            }");
+            out.println("            get { return true; }");
             out.println("        }");
             out.println("");
         }
@@ -151,8 +148,6 @@ public class CommandClassGenerator extends CommandCodeGenerator {
     }
 
     protected void generateUsingDirectives( PrintWriter out ) {
-        out.println("using System;");
-        out.println("using System.Collections;");
 
         if( getBaseClassName().equals( "BaseCommand" ) ) {
             out.println("");

@@ -29,6 +29,8 @@ public class MessageGenerator extends CommandClassGenerator {
     protected void generateUsingDirectives( PrintWriter out ) {
         super.generateUsingDirectives(out);
 
+        out.println("using System;");
+        out.println("");
         out.println("using Apache.NMS.Util;");
     }
 

@@ -28,6 +28,12 @@ public class MessageIdGenerator extends CommandClassGenerator {
         out.println("");
     }
 
+    protected void generateUsingDirectives( PrintWriter out ) {
+        super.generateUsingDirectives(out);
+
+        out.println("using System;");
+    }
+
     protected void generateConstructors( PrintWriter out ) {
 
         out.println("        public "+getClassName()+"() : base()");

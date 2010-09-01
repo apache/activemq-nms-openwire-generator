@@ -48,6 +48,12 @@ public class ProducerIdGenerator extends CommandClassGenerator {
         super.generateConstructors(out);
     }
 
+    protected void generateUsingDirectives( PrintWriter out ) {
+        super.generateUsingDirectives(out);
+
+        out.println("using System;");
+    }
+
     protected void generateProperties( PrintWriter out ) {
 
         out.println("        private SessionId parentId;");
