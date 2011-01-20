@@ -221,7 +221,11 @@ public class CommandClassGenerator extends CommandCodeGenerator {
         for( JProperty property : getProperties() ) {
             String name = property.getSimpleName();
 
-            out.print("                \"" + name + " = \" + " + name + " + ");
+            if( property.getType().isArrayType() && toCSharpType(property.getType()).startsWith("byte")) {
+                out.print("                \"" + name + " = \" + System.Text.ASCIIEncoding.ASCII.GetString(" + name + ") + ");
+            } else {
+                out.print("                \"" + name + " = \" + " + name + " + ");
+            }
 
             if( ++count != size ) {
                 out.println("\", \" + ");
@@ -287,10 +291,17 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             for( JProperty property : getProperties() ) {
                 String accessorName = property.getSimpleName();
 
-                out.println("            if(!Equals(this."+accessorName+", that."+accessorName+"))");
-                out.println("            {");
-                out.println("                return false;");
-                out.println("            }");
+                if( !property.getType().isArrayType() ) {
+                    out.println("            if(!Equals(this."+accessorName+", that."+accessorName+"))");
+                    out.println("            {");
+                    out.println("                return false;");
+                    out.println("            }");
+                } else {
+                    out.println("            if(!ArrayEquals(this."+accessorName+", that."+accessorName+"))");
+                    out.println("            {");
+                    out.println("                return false;");
+                    out.println("            }");
+                }
             }
 
             out.println("");
