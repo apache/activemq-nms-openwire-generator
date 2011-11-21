@@ -222,7 +222,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             String name = property.getSimpleName();
 
             if( property.getType().isArrayType() && toCSharpType(property.getType()).startsWith("byte")) {
-                out.print("                \"" + name + " = \" + System.Text.ASCIIEncoding.ASCII.GetString(" + name + ") + ");
+                out.print("                \"" + name + " = \" + " + name + " ?? System.Text.ASCIIEncoding.ASCII.GetString(" + name + ") + ");
             } else {
                 out.print("                \"" + name + " = \" + " + name + " + ");
             }
