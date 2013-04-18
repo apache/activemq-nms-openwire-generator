@@ -33,7 +33,7 @@
   <description>Tool used to create the NMS.ActiveMQ OpenWire Commands and Marshallers.</description>
   <inceptionYear>2009</inceptionYear>
   <prerequisites>
-    <maven>2.0.9</maven>
+    <maven>3.0.4</maven>
   </prerequisites>
 
   <organization>
@@ -61,12 +61,12 @@
   </mailingLists>
 
   <properties>
-    <activemq-version>5.5-SNAPSHOT</activemq-version>
+    <activemq-version>5.9-SNAPSHOT</activemq-version>
     <projectName>Apache NMS.ActiveMQ</projectName>
     <annogen-version>0.1.0</annogen-version>
     <ant-version>1.6.2</ant-version>
-    <xstream-version>1.3.1</xstream-version>
-    <activemq-core-dir>${ACTIVEMQ_SRC_HOME}/activemq-core/</activemq-core-dir>
+    <xstream-version>1.4.2</xstream-version>
+    <activemq-core-dir>${ACTIVEMQ_SRC_HOME}/activemq-client/</activemq-core-dir>
     <nms-activemq-dir>${NMS_ACTIVEMQ_HOME}</nms-activemq-dir>
   </properties>
 
@@ -78,7 +78,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-core</artifactId>
+      <artifactId>activemq-client</artifactId>
       <version>${activemq-version}</version>
     </dependency>
   </dependencies>
@@ -86,12 +86,12 @@
   <distributionManagement>
     <repository>
       <id>release.apache.org</id>
-      <name>ActiveMQ-CPP Release Repository</name>
+      <name>ActiveMQ NMS Release Repository</name>
       <url>file:///home/tabish/dev/maven2/repo/release</url>
     </repository>
     <snapshotRepository>
       <id>snapshots.apache.org</id>
-      <name>ActiveMQ-CPP Snapshots Repository</name>
+      <name>ActiveMQ NMS Snapshots Repository</name>
       <url>file:///home/tabish/dev/maven2/repo/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
@@ -139,7 +139,7 @@
           <tasks>
             <echo>Running OpenWire Generator</echo>
             <taskdef name="generate" classname="org.apache.activemq.nms.openwire.tool.AmqCSharpGeneratorTask" classpathref="maven.compile.classpath" />
-            <generate maxVersion="6" source="${activemq-core-dir}" target="${nms-activemq-dir}" />
+            <generate maxVersion="9" source="${activemq-core-dir}" target="${nms-activemq-dir}" />
           </tasks>
         </configuration>
       </plugin>
