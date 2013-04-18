@@ -16,11 +16,38 @@
  */
 package org.apache.activemq.nms.openwire.tool.commands;
 
+import java.io.PrintWriter;
+
 public class MessageDispatchGenerator extends CommandClassGenerator {
 
     public MessageDispatchGenerator() {
         super();
         this.setComparable(true);
+    }
+
+    protected void generateUsingDirectives( PrintWriter out ) {
+        super.generateUsingDirectives(out);
+
+        out.println("using System;");
+    }
+
+    protected void generateProperties( PrintWriter out ) {
+
+        out.println("        private Exception rollbackCause = null;");
+        out.println("");
+
+        super.generateProperties(out);
+    }
+
+    protected void generateAdditonalMembers( PrintWriter out ) {
+        out.println("        public Exception RollbackCause");
+        out.println("        {");
+        out.println("            get { return this.rollbackCause; }");
+        out.println("            set { this.rollbackCause = value; }");
+        out.println("        }");
+        out.println("");
+
+        super.generateAdditonalMembers( out );
     }
 
 }
