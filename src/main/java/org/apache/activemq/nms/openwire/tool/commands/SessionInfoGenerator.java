@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 public class SessionInfoGenerator extends CommandClassGenerator {
 
     protected void generateVisitBody( PrintWriter out ) {
-        out.println("            return visitor.processAddSession( this );");
+        out.println("            return visitor.ProcessAddSession( this );");
     }
 
     protected void generateConstructors( PrintWriter out ) {

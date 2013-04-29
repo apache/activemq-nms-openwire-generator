@@ -21,6 +21,6 @@ import java.io.PrintWriter;
 public class ProducerInfoGenerator extends CommandClassGenerator {
 
     protected void generateVisitBody( PrintWriter out ) {
-        out.println("            return visitor.processAddProducer( this );");
+        out.println("            return visitor.ProcessAddProducer( this );");
     }
 }

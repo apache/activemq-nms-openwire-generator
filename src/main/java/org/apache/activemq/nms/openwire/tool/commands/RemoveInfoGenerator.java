@@ -25,13 +25,13 @@ public class RemoveInfoGenerator extends CommandClassGenerator {
         out.println("            switch(objectId.GetDataStructureType())");
         out.println("            {");
         out.println("                case ConnectionId.ID_CONNECTIONID:");
-        out.println("                    return visitor.processRemoveConnection((ConnectionId) objectId);");
+        out.println("                    return visitor.ProcessRemoveConnection((ConnectionId) objectId);");
         out.println("                case SessionId.ID_SESSIONID:");
-        out.println("                    return visitor.processRemoveSession((SessionId) objectId);");
+        out.println("                    return visitor.ProcessRemoveSession((SessionId) objectId);");
         out.println("                case ConsumerId.ID_CONSUMERID:");
-        out.println("                    return visitor.processRemoveConsumer((ConsumerId) objectId);");
+        out.println("                    return visitor.ProcessRemoveConsumer((ConsumerId) objectId);");
         out.println("                case ProducerId.ID_PRODUCERID:");
-        out.println("                    return visitor.processRemoveProducer((ProducerId) objectId);");
+        out.println("                    return visitor.ProcessRemoveProducer((ProducerId) objectId);");
         out.println("                default:");
         out.println("                    throw new IOException(\"Unknown remove command type: \" + objectId.GetDataStructureType());");
         out.println("            }");

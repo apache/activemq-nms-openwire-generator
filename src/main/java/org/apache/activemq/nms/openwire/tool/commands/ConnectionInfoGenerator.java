@@ -21,6 +21,6 @@ import java.io.PrintWriter;
 public class ConnectionInfoGenerator extends CommandClassGenerator {
 
     protected void generateVisitBody( PrintWriter out ) {
-        out.println("            return visitor.processAddConnection( this );");
+        out.println("            return visitor.ProcessAddConnection( this );");
     }
 }

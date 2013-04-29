@@ -136,7 +136,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
             out.println("        ///  the proper processXXX method in the visitor." );
             out.println("        /// </summery>");
             out.println("        ///");
-            out.println("        public override Response visit(ICommandVisitor visitor)" );
+            out.println("        public override Response Visit(ICommandVisitor visitor)" );
             out.println("        {");
             generateVisitBody(out);
             out.println("        }");
@@ -198,7 +198,7 @@ public class CommandClassGenerator extends CommandCodeGenerator {
     }
 
     protected void generateVisitBody( PrintWriter out ) {
-        out.println("            return visitor.process"+getClassName()+"(this);");
+        out.println("            return visitor.Process"+getClassName()+"(this);");
     }
 
     protected void generateToStringBody( PrintWriter out ) {

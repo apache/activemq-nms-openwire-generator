@@ -24,11 +24,11 @@ public class DestinationInfoGenerator extends CommandClassGenerator {
 
         out.println("        if(IsAddOperation)");
         out.println("        {");
-        out.println("            return visitor.processAddDestination(this);");
+        out.println("            return visitor.ProcessAddDestination(this);");
         out.println("        }");
         out.println("        else if(IsRemoveOperation)");
         out.println("        {");
-        out.println("            return visitor.processRemoveDestination(this);");
+        out.println("            return visitor.ProcessRemoveDestination(this);");
         out.println("        }");
         out.println("        throw new IOException(\"Unknown operation type: \" + OperationType);");
 

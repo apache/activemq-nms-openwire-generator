@@ -21,6 +21,6 @@ import java.io.PrintWriter;
 public class ConsumerInfoGenerator extends CommandClassGenerator {
 
     protected void generateVisitBody( PrintWriter out ) {
-        out.println("            return visitor.processAddConsumer( this );");
+        out.println("            return visitor.ProcessAddConsumer( this );");
     }
 }
