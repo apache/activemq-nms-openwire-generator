@@ -65,8 +65,8 @@
     <projectName>Apache NMS.ActiveMQ</projectName>
     <annogen-version>0.1.0</annogen-version>
     <ant-version>1.6.2</ant-version>
-    <xstream-version>1.4.2</xstream-version>
-    <activemq-core-dir>${ACTIVEMQ_SRC_HOME}/activemq-client/</activemq-core-dir>
+    <xstream-version>1.4.4</xstream-version>
+    <activemq-src-dir>${ACTIVEMQ_SRC_HOME}/activemq-client/</activemq-src-dir>
     <nms-activemq-dir>${NMS_ACTIVEMQ_HOME}</nms-activemq-dir>
   </properties>
 
@@ -128,8 +128,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>
@@ -139,7 +139,7 @@
           <tasks>
             <echo>Running OpenWire Generator</echo>
             <taskdef name="generate" classname="org.apache.activemq.nms.openwire.tool.AmqCSharpGeneratorTask" classpathref="maven.compile.classpath" />
-            <generate maxVersion="9" source="${activemq-core-dir}" target="${nms-activemq-dir}" />
+            <generate maxVersion="10" source="${activemq-src-dir}" target="${nms-activemq-dir}" />
           </tasks>
         </configuration>
       </plugin>

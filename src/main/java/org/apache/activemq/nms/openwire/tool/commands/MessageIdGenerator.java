@@ -59,7 +59,21 @@ public class MessageIdGenerator extends CommandClassGenerator {
 
         out.println("            if(key == null) ");
         out.println("            {");
-        out.println("                key = producerId.ToString() + \":\" + producerSequenceId + \":\" + brokerSequenceId;");
+        out.println("                if (!String.IsNullOrEmpty(textView))");
+        out.println("                {");
+        out.println("                    if (textView.StartsWith(\"ID:\"))");
+        out.println("                    {");
+        out.println("                        key = textView;");
+        out.println("                    }");
+        out.println("                    else");
+        out.println("                    {");
+        out.println("                        key = \"ID:\" + textView;");
+        out.println("                    }");
+        out.println("                }");
+        out.println("                else");
+        out.println("                {");
+        out.println("                    key = producerId.ToString() + \":\" + producerSequenceId + \":\" + brokerSequenceId;");
+        out.println("                }");
         out.println("            }");
         out.println("            ");
         out.println("            return key;");
