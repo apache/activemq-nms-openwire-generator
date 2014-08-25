@@ -34,6 +34,8 @@ public class MessageDispatchGenerator extends CommandClassGenerator {
     protected void generateProperties( PrintWriter out ) {
 
         out.println("        private Exception rollbackCause = null;");
+        out.println("        private long deliverySequenceId;");
+        out.println("        private object consumer;");
         out.println("");
 
         super.generateProperties(out);
@@ -44,6 +46,18 @@ public class MessageDispatchGenerator extends CommandClassGenerator {
         out.println("        {");
         out.println("            get { return this.rollbackCause; }");
         out.println("            set { this.rollbackCause = value; }");
+        out.println("        }");
+        out.println("");
+        out.println("        public long DeliverySequenceId");
+        out.println("        {");
+        out.println("            get { return this.deliverySequenceId; }");
+        out.println("            set { this.deliverySequenceId = value; }");
+        out.println("        }");
+        out.println("");
+        out.println("        public object Consumer");
+        out.println("        {");
+        out.println("            get { return this.consumer; }");
+        out.println("            set { this.consumer = value; }");
         out.println("        }");
         out.println("");
 

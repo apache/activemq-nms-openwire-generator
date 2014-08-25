@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>7</version>
+    <version>14</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -61,13 +61,16 @@
   </mailingLists>
 
   <properties>
-    <activemq-version>5.9-SNAPSHOT</activemq-version>
-    <projectName>Apache NMS.ActiveMQ</projectName>
     <annogen-version>0.1.0</annogen-version>
-    <ant-version>1.6.2</ant-version>
+    <ant-version>1.8.4</ant-version>
+    <activemq-version>5.10.0</activemq-version>
+    <projectName>Apache NMS.ActiveMQ</projectName>
     <xstream-version>1.4.4</xstream-version>
     <activemq-src-dir>${ACTIVEMQ_SRC_HOME}/activemq-client/</activemq-src-dir>
+    <maven-antrun-plugin-version>1.7</maven-antrun-plugin-version>
     <nms-activemq-dir>${NMS_ACTIVEMQ_HOME}</nms-activemq-dir>
+    <source-version>1.6</source-version>
+    <target-version>1.6</target-version>
   </properties>
 
   <dependencies>
@@ -80,6 +83,36 @@
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
       <version>${activemq-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-antrun-plugin</artifactId>
+      <version>${maven-antrun-plugin-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>groovy</groupId>
+      <artifactId>gram</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.0-jsr-03</version>
+    </dependency>
+    <dependency>
+      <groupId>annogen</groupId>
+      <artifactId>annogen</artifactId>
+      <version>${annogen-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>${ant-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.1</version>
     </dependency>
   </dependencies>
 
@@ -108,7 +141,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -128,8 +160,12 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>${source-version}</source>
+          <target>${target-version}</target>
+          <optimize>true</optimize>
+          <debug>true</debug>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
         </configuration>
       </plugin>
       <plugin>
