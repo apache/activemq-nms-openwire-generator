@@ -63,7 +63,7 @@
   <properties>
     <annogen-version>0.1.0</annogen-version>
     <ant-version>1.8.4</ant-version>
-    <activemq-version>5.10.0</activemq-version>
+    <activemq-version>5.15.9</activemq-version>
     <projectName>Apache NMS.ActiveMQ</projectName>
     <xstream-version>1.4.4</xstream-version>
     <activemq-src-dir>${ACTIVEMQ_SRC_HOME}/activemq-client/</activemq-src-dir>
